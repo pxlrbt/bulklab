@@ -1,6 +1,6 @@
 {
   "name": "boilerplate-html",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Website",
   "dependencies": {
     "laravel-mix": "^1.7.2"
@@ -17,5 +17,5 @@
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
-  "author": "Dennis Koch",
+  "author": "Dennis Koch"
 }
