@@ -9,8 +9,8 @@ mix .options({
     .setPublicPath('./');
 
 mix .js('assets/src/scripts/main.js', 'assets/dist/js/main.js')
-    .copyDirectory('assets/src/fonts', 'assets/dist/fonts')
-    .copyDirectory('assets/src/images', 'assets/dist/images')
+    // .copyDirectory('assets/src/fonts', 'assets/dist/fonts')
+    // .copyDirectory('assets/src/images', 'assets/dist/images')
     .setPublicPath('./');
 
 

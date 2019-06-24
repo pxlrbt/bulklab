@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Titel</title>
-	<link rel="stylesheet" href="assets/dist/css/style.css">
+	<title>BulkLab</title>
+	<link rel="stylesheet" href="assets/dist/css/main.css">
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale= 1.0">
 
 
@@ -12,7 +12,63 @@
 	<![endif]-->
 </head>
 <body>
+	<div id="app">
+		<header>
+			<div class="container">
+				<h1>BulkLab</h1>
+				<h2>Gitlab Bulk Editor</h2>
+			</div>
+		</header>
+		<main>
+			<template v-if="token == null">
+				<p>
+					Please authenticate this app.
+				</p>
+				<button v-on:click="authenticate">
+					Authenticate
+				</button>
+			</template>
 
+			<div class="container" v-else>
+				<div class="action-bar">
+					<button v-on:click="toggleAll">
+						Toggle All
+					</button>
+
+					<select v-model="bulkAction">
+						<option :value="null">Select action</option>
+						<option value="delete">Delete</option>
+						<option value="archive">Archive</option>
+						<option value="archive">Move</option>
+					</select>
+					<button v-on:click="bulkApply">
+						Apply
+					</button>
+				</div>
+
+				<div :class="{'projects': true, 'loading': loading}">
+					<div :class="['project', p.processing ? 'loading' : '']" v-for="p in projects" :key="p.id">
+						<div :class="['checkbox', projectSelected(p) ? 'checked' : '' ]"
+							v-on:click="toggleProject(p)">
+
+						</div>
+						{{ p.processing }}
+						{{ p.name_with_namespace }}
+					</div>
+				</div>
+
+				<div class="pagination">
+					<button class="pagination__prev" v-if="page > 1" v-on:click="prevPage">
+						<i class="far fa-chevron-left"></i>
+					</button>
+					<button class="pagination__next" v-if="per_page == projects.length" v-on:click="nextPage">
+						<i class="far fa-chevron-right"></i>
+					</button>
+				</div>
+			</div>
+		</main>
+	</div>
     <script src="assets/dist/js/main.js"></script>
 </body>
 </html>
+.
