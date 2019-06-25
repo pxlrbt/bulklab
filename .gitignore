@@ -6,3 +6,4 @@ npm-debug.log
 /assets/dist
 /config*.php
 !/config.sample.php
+/mix-manifest.json
