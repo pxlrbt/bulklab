@@ -97,7 +97,7 @@ window.app = new Vue({
 
     mounted: async function() {
         this.token = Cookies.get('GITLAB_ACCESS_TOKEN');
-        this.gitLabHost = Cookies.get('GITLAB_HOST').replace(/\/$/, "") || "https://gitlab.com";
+        this.gitLabHost = Cookies.get('GITLAB_HOST') || "https://gitlab.com";
 
         if (this.token == null || this.gitLabHost == null) return;
 
