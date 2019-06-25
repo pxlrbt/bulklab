@@ -1,18 +1,16 @@
-# Install dependencies
+# BulkLab
 
+BulkLab is a small nifty tool for bulk editing projects on GitLab. Just authenticate via GitLab and bulk delete, transfer, archive or unarchive your projects.
+
+## Development
+
+### Requirements
+- PHP Server
+- Node.js / npm
+
+### Setup
 ```
 npm install
 npm install --only=dev
+npm run watch
 ```
-
-# Setup Laravel Mix to your needs
-
-### Normal behaviour:
-- Images: Copy from `assets/src/images` to `assets/dist/images`
-- Fonts: Copy from `assets/src/fonts` to `assets/dist/fonts`
-- JS: Compile `assets/src/scripts/main.js`
-- JS: Merge to single file `assets/src/pages/*.js`
-- CSS: Compile Sass `assets/src/styles/main.sass`
-
-### More Configuration
-See `webpack.mix.js` file OR [https://laravel.com/docs/5.5/mix](https://laravel.com/docs/5.5/mix)

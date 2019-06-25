@@ -4,7 +4,7 @@ export default class Gitlab
 {
     constructor(token, url)
     {
-        this.url = url || 'https://gitlab.com/api/v4/';
+        this.url = url.replace(/\/$/, "") + '/api/v4' || 'https://gitlab.com/api/v4';
         this.axios = axios;
         this.axios.defaults.headers.common['Authorization'] = "Bearer " + token;
     }
@@ -26,7 +26,7 @@ export default class Gitlab
             page: 1
         }, params);
 
-        let resp = await this.axios.get(this.url + 'groups', {
+        let resp = await this.axios.get(this.url + '/groups', {
             params: params
         });
 
@@ -42,7 +42,7 @@ export default class Gitlab
             page: 1
         }, params);
 
-        let resp = await this.axios.get(this.url + 'projects', {
+        let resp = await this.axios.get(this.url + '/projects', {
             params: params
         });
 
@@ -51,7 +51,7 @@ export default class Gitlab
 
     async archiveProject(project) {
         try {
-            let resp = await this.axios.post(this.url + 'projects/' + project.id + '/archive');
+            let resp = await this.axios.post(this.url + '/projects/' + project.id + '/archive');
             return this.response(true, project, resp.data);
         } catch (e) {
             return this.response(false, project, e);
@@ -60,7 +60,7 @@ export default class Gitlab
 
     async unarchiveProject(project) {
         try {
-            let resp = await this.axios.post(this.url + 'projects/' + project.id + '/unarchive');
+            let resp = await this.axios.post(this.url + '/projects/' + project.id + '/unarchive');
             return this.response(true, project, resp.data);
         } catch (e) {
             return this.response(false, project, e);
@@ -70,7 +70,7 @@ export default class Gitlab
     async transferProject(project, params)
     {
         try {
-            let resp = await this.axios.put(this.url + 'projects/' + project.id + '/transfer', params);
+            let resp = await this.axios.put(this.url + '/projects/' + project.id + '/transfer', params);
             return this.response(true, project, resp.data);
         } catch (e) {
             return this.response(false, project, e);
@@ -80,7 +80,7 @@ export default class Gitlab
     async deleteProject(project)
     {
         try {
-            let resp = await this.axios.delete(this.url + 'projects/' + project.id);
+            let resp = await this.axios.delete(this.url + '/projects/' + project.id);
             return this.response(true, project, resp.data);
         } catch (e) {
             return this.response(false, project, e);

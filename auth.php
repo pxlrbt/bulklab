@@ -1,12 +1,36 @@
 <?php
 
-$gitlabUrl = "https://gitlab.com/";
-$redirectUrl = "https://gitlab-bulk.pxlrbt.test/auth.php";
-$appId = "e2bf0e0eea2bdf7c281ab940865bc32197a684e96733bc82dc8f78760ee1fedd";
-$appSecret = "58e63b9fba2fa8cc07e1043e21c0fa3d186c1237b4d6adefddebc36a58467033";
-$state = "PXLRBT_GITLAB_BULK";
+session_start();
 
+require __DIR__ . '/config.php';
+
+// Redirect for auth
+if (isset($_POST['gitlabHost'])) {
+    $gitlabHost = trim($_POST['gitlabHost'], '/ ');
+    $state = "BulkLab_" . bin2hex(random_bytes(8));
+
+    $_SESSION['state'] = $state;
+    $_SESSION['gitlabHost'] = $gitlabHost;
+
+    if (empty($gitlabHost)) {
+        echo "No GitLab host provided.";
+        return;
+    }
+
+    $url = $gitlabHost . "/oauth/authorize?client_id=" . $appId . "&redirect_uri=" . $redirectUrl . "&response_type=code&state=" . $state;
+
+    header("Location: " . $url);
+    return;
+}
+
+// Get auth token
 if (isset($_GET['code'])) {
+    if ($_GET['state'] != $_SESSION['state']) {
+        echo 'ERROR: State does not match session.';
+        exit;
+    }
+
+    $gitlabHost = $_SESSION['gitlabHost'];
     $params = [
         "client_id" => $appId,
         "client_secret" => $appSecret,
@@ -17,7 +41,7 @@ if (isset($_GET['code'])) {
 
     $out = fopen('php://output', 'w');
 
-    $url = $gitlabUrl . "oauth/token";
+    $url = $gitlabHost . "/oauth/token";
     $ch = curl_init();
 
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -44,12 +68,7 @@ if (isset($_GET['code'])) {
     }
 
     setcookie("GITLAB_ACCESS_TOKEN", $data->access_token);
+    setcookie("GITLAB_HOST", $_SESSION['gitlabHost']);
     header("Location: /");
     return;
 }
-
-
-
-$url = $gitlabUrl . "oauth/authorize?client_id=" . $appId . "&redirect_uri=" . $redirectUrl . "&response_type=code&state=" . $state;
-header("Location: " . $url);
-return;

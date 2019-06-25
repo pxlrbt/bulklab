@@ -2,73 +2,140 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>BulkLab</title>
-	<link rel="stylesheet" href="assets/dist/css/main.css">
+	<meta name="description" content="BulkLab is a small nifty tool for bulk editing GitLab projects (like archive, transfer, delete).">
+	<meta name="keywords" content="gitlab,bulk editing,bulk transfer,bulk delete,api">
+	<meta name="author" content="Dennis Koch, pxlrbt">
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale= 1.0">
 
+	<title>BulkLab - GitLab Bulk Editor</title>
 
-	<!--[if lt IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
+	<link rel="stylesheet" href="assets/dist/css/main.css">
 </head>
 <body>
 	<div id="app">
-		<header>
+		<header class="header">
 			<div class="container">
-				<h1>BulkLab</h1>
-				<h2>Gitlab Bulk Editor</h2>
+				<h1>BulkLab <small>GitLab Bulk Editor</small></h1>
 			</div>
 		</header>
-		<main>
+		<main class="content">
+			<!-- Authenticate -->
 			<template v-if="token == null">
-				<p>
-					Please authenticate this app.
-				</p>
-				<button v-on:click="authenticate">
-					Authenticate
-				</button>
+				<div class="container">
+					<div class="row">
+						<div class="col">
+							<h2>BulkLab</h2>
+							<p>
+								BulkLab is a small nifty tool for bulk editing projects on GitLab. Just authenticate via GitLab and bulk delete, transfer, archive or unarchive your projects.
+							</p>
+							<p>
+								Source code and support: <a href="https://github.com/pxlrbt/bulklab">https://github.com/pxlrbt/bulklab</a>
+							</p>
+						</div>
+
+						<div class="col auth">
+							<h2>Authenticate</h2>
+							<form class="auth__form" action="auth.php"
+									method="POST"
+									:class="{'loading': loading}"
+									v-on:submit="validateHost">
+								<label>
+									GitLab instance:<br>
+									<input type="text" name="gitlabHost" v-model="gitlabHost">
+								</label>
+								<br>
+								<button class="btn" type="submit">
+									<i class="fab fa-gitlab"></i> Authenticate with GitLab
+								</button>
+								<div class="auth__error" v-if="authError">
+									{{ authError }}
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 			</template>
 
+			<!-- App -->
 			<div class="container" v-else>
 				<div class="action-bar">
-					<button v-on:click="toggleAll">
+					<button class="btn" v-on:click="toggleAll">
 						Toggle All
 					</button>
 
 					<select v-model="bulkAction">
 						<option :value="null">Select action</option>
-						<option value="delete">Delete</option>
-						<option value="archive">Archive</option>
-						<option value="archive">Move</option>
+
+						<option
+							:value="action"
+							:key="'action-' + action.name"
+							v-for="action in actions">
+							{{ action.title }}
+						</option>
 					</select>
-					<button v-on:click="bulkApply">
+
+					<select v-model="actionParams.namespace" v-if="bulkAction && bulkAction.name == 'transferProject'">
+						<option>Select Target</option>
+
+						<option
+							:value="group.id"
+							:key="'group-' + group.name"
+							v-for="group in groups">
+							{{ group.full_name }}
+						</option>
+					</select>
+
+					<button class="btn" v-on:click="bulkApply" :disabled="bulkAction == null">
 						Apply
+					</button>
+
+					<button class="btn f-right" v-on:click="loadProjects">
+						<i class="far fa-sync"></i> Refresh
 					</button>
 				</div>
 
 				<div :class="{'projects': true, 'loading': loading}">
-					<div :class="['project', p.processing ? 'loading' : '']" v-for="p in projects" :key="p.id">
-						<div :class="['checkbox', projectSelected(p) ? 'checked' : '' ]"
+					<div :class="['project', p.processing ? 'loading' : '']"
+							v-for="p in projects" :key="p.id"
 							v-on:click="toggleProject(p)">
-
+						<div :class="['checkbox', projectSelected(p) ? 'checked' : '' ]"></div>
+						<span class="project__name">
+							{{ p.name_with_namespace }}
+							<i class="far fa-archive fa-small" v-if="p.archived"></i>
+						</span>
+						<div class="project__message" v-if="p.message">
+							{{ p.message }}
 						</div>
-						{{ p.processing }}
-						{{ p.name_with_namespace }}
+					</div>
+					<div class="project" v-if="projects.length == 0">
+						No projects.
 					</div>
 				</div>
 
 				<div class="pagination">
-					<button class="pagination__prev" v-if="page > 1" v-on:click="prevPage">
+					<div class="pagination__page">
+						Page {{ paging.page }}
+					</div>
+					<button class="pagination__prev" v-if="paging.page > 1" v-on:click="prevPage">
 						<i class="far fa-chevron-left"></i>
 					</button>
-					<button class="pagination__next" v-if="per_page == projects.length" v-on:click="nextPage">
+					<button class="pagination__next" v-if="paging.has_more" v-on:click="nextPage">
 						<i class="far fa-chevron-right"></i>
 					</button>
 				</div>
 			</div>
 		</main>
+
+		<footer class="footer">
+			<div class="container">
+				<div>Made by <a href="https://github.com/pxlrbt">pxlrbt</a></div>
+				<nav>
+					<a href="https://pixelarbeit.de/impressum">Imprint</a>
+					<a href="https://pixelarbeit.de/datenschutz">Privacy Policy</a>
+				</nav>
+			</div>
+		</footer>
 	</div>
     <script src="assets/dist/js/main.js"></script>
 </body>
 </html>
-.

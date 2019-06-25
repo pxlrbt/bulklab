@@ -97,28 +97,25 @@ window.app = new Vue({
 
     mounted: async function() {
         this.token = Cookies.get('GITLAB_ACCESS_TOKEN');
-        console.log('Token', this.token);
+        this.gitLabHost = Cookies.get('GITLAB_HOST').replace(/\/$/, "") || "https://gitlab.com";
 
-        if (this.token == null) return;
+        if (this.token == null || this.gitLabHost == null) return;
 
-        this.gitlabHost = new Gitlab(this.token);
-
-        try {
-            this.groups = await this.gitlab.getGroups();
-        } catch (e) {
-            console.error('Could not load groups');
-        }
-
-        this.loadProjects();
+        this.init();
     },
 
     methods: {
-        validateHost(event) {
-            event.preventDefault();
+        init() {
+            this.gitlab = new Gitlab(this.token, this.gitlabHost);
+            this.loadGroups();
+            this.loadProjects();
+        },
 
+        async validateHost(event) {
             // Copyright (c) 2010-2013 Diego Perini, MIT licensed
             // https://gist.github.com/dperini/729294
             if (/^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})).?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(this.gitlabHost) == false) {
+                event.preventDefault();
                 this.authError = 'Invalid URL'
                 return;
             }
@@ -127,24 +124,21 @@ window.app = new Vue({
 
             try {
                 this.gitlabHost = this.gitlabHost.replace(/\/$/, "");
-                let resp = axios.get(this.gitlabHost + '/help')
-                console.log('Resp', resp);
-
-                if (typeof resp.data.version == 'undefined') {
-                    this.authError = 'Cannot connect to GitLab host. Unexpected respons.';
-                    console.error('Response', resp);
+                await axios.get(this.gitlabHost + '/api/v4/version')
+            } catch (e) {
+                if (e.response.status != 401) {
+                    event.preventDefault();
+                    this.authError = 'Cannot connect to GitLab host: ' + e.message;
                     this.loading = false;
                     return;
                 }
 
-                console.log('Valid url');
-
-                // window.location.href = '/auth.php';
-            } catch (e) {
-                this.authError = 'Cannot connect to GitLab host: ' + e.message;
+                if (!e.response.data || e.response.data.message != '401 Unauthorized') {
+                    event.preventDefault();
+                    this.authError = 'Cannot connect to GitLab host. Unknown Error.';
+                    return;
+                }
             }
-
-            this.loading = false;
         },
 
         prevPage() {
@@ -153,6 +147,14 @@ window.app = new Vue({
 
         nextPage() {
             if (this.paging.has_more) this.paging.page++;
+        },
+
+        async loadGroups() {
+            try {
+                this.groups = await this.gitlab.getGroups();
+            } catch (e) {
+                console.error('Could not load groups');
+            }
         },
 
         async loadProjects() {
