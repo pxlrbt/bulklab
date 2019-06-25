@@ -20,4 +20,4 @@ npm run watch
 ```
 
 ## Maintainer
-This project is maintained by (Dennis Koch)[https://github.com/pxlrbt].
+This project is maintained by [Dennis Koch](https://github.com/pxlrbt).
