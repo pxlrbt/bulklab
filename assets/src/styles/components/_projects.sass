@@ -1,0 +1,36 @@
+.projects
+    background-color: $white
+
+    .project
+        cursor: pointer
+        padding: 0.5em 1em
+
+        & + .project
+            border-top: 1px solid $grey
+        &__name
+            i
+                margin-left: .75em
+
+        &__message
+            background: #eeeeee
+            padding: .25em 1em
+            margin-top: .5em
+
+    .checkbox
+        position: relative
+        display: inline-block
+        width: 1em
+        height: 1em
+        margin-right: 1em
+        border: 1px solid $grey
+        vertical-align: middle
+        cursor: pointer
+
+        &.checked::before
+            @extend .far
+            position: absolute
+            left: 0px
+            top: -5px
+            font-size: 1.25em
+            color: $orange
+            content: fa-content($fa-var-check)

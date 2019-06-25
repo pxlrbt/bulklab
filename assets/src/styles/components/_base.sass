@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:600|PT+Sans&display=swap')
 
 body
-    font-family: 'PT Sans', sans-serif
+    font-family: $font
     font-size: 16px
     line-height: 1.5
     color: $black
@@ -15,14 +15,29 @@ h1
 h2
     font-size: 1.2em
 
-main
+.btn
+    display: inline-block
+    font-family: $font
+    font-size: 1em
+    line-height: 1.5
+    background-color: $white
+    border: 1px solid rgba(169, 169, 169, 1)
+    padding: 0.25em 1em
+
+    &:disabled
+        cursor: not-allowed
+
+    i
+        margin-right: 0.75em
+
+.content
     padding: 2em
 
 .container
     max-width: 60em
     margin: 0 auto
 
-header
+.header
     background-color: $orange
     color: rgb(30, 30, 30)
     padding: 0.25em 1em
@@ -34,101 +49,33 @@ header
     h2
         display: inline-block
 
-.projects
-    background-color: $white
+.auth-error
+    margin-top: 1em
+    padding: 0.5em
+    background-color: $orange
+    color: $white
 
-    .project
-        padding: 0.5em 1em
+form
+    max-width: 15em
+    margin: 2em auto 0
 
-        & + .project
-            border-top: 1px solid $grey
+    label
+        font-weight: bold
+        width: 100%
+        text-align: left
 
-    .checkbox
-        position: relative
-        display: inline-block
-        width: 1em
-        height: 1em
-        margin-right: 1em
-        border: 1px solid $grey
-        vertical-align: middle
-        cursor: pointer
-
-        &.checked::before
-            @extend .far
-            position: absolute
-            left: 0px
-            top: -5px
-            font-size: 1.25em
-            color: $orange
-            content: fa-content($fa-var-check)
-
-
-.action-bar
-    margin-bottom: 1em
-
-    select
-        font-family: 'PT Sans', sans-serif
-        font-size: 16px
-        line-height: 1.5
-        color: $black
-
-        padding: 0.25em 1em
+    input
+        width: 100%
 
     button
-        display: inline-block
-        font-size: 1em
-        background-color: $white
-        border: 1px solid rgba(169, 169, 169, 1)
-        padding: 0.25em 1em
+        width: 100%
 
-
-
-.pagination
-    text-align: right
-    margin-top: 1em
-
-    &__prev, &__next
-        display: inline-block
-        cursor: pointer
-
-        width: 1.5em
-        height: 1.5em
-        background-color: $white
-        border: 1px solid $grey
-
-        font-size: 1.25em
-
-.loading
-    position: relative
-    min-height: 2em
-
-    &::before
-        content: ' '
-        position: absolute
-        top: 0
-        left: 0
-        right: 0
-        bottom: 0
-        z-index: 99
-
-        background-color: rgba(255, 255, 255, .8)
-
-    &::after
-        @extend .far
-        @extend .fa-spin
-
-        position: absolute
-        top: 0
-        left: 0
-        right: 0
-        bottom: 0
-        z-index: 100
-
-        display: flex
-        justify-content: center
-        align-items: center
-
-        font-size: 1.5em
-        color: $orange
-        text-align: center
-        content: fa-content($fa-var-spinner-third)
+input[type="text"]
+    display: inline-block
+    font-family: $font
+    font-size: 1em
+    line-height: 1.5
+    background-color: $white
+    border: 1px solid rgba(169, 169, 169, 1)
+    padding: 0.25em 1em
+    margin-bottom: 0.5em
